@@ -1,0 +1,186 @@
+#!/bin/bash
+
+# Quebra de linha
+echo -e "\n"
+
+# Função para mostrar o banner_logs_analyzer
+banner_logs_analyzer()
+{
+        echo -e "\e[36m█████                                      █████████                        ████                                      		\e[0m   "
+        echo -e "\e[36m░░███                                      ███░░░░░███                      ░░███                                          	\e[0m   "
+        echo -e "\e[36m ░███         ██████   ███████  █████     ░███    ░███  ████████    ██████   ░███  █████ ████  █████████  ██████  ████████ 	\e[0m   "
+        echo -e "\e[35m ░███        ███░░███ ███░░███ ███░░      ░███████████ ░░███░░███  ░░░░░███  ░███ ░░███ ░███  ░█░░░░███  ███░░███░░███░░███	\e[0m   "
+        echo -e "\e[35m ░███       ░███ ░███░███ ░███░░█████     ░███░░░░░███  ░███ ░███   ███████  ░███  ░███ ░███  ░   ███░  ░███████  ░███ ░░░ 	\e[0m   "
+        echo -e "\e[35m ░███      █░███ ░███░███ ░███ ░░░░███    ░███    ░███  ░███ ░███  ███░░███  ░███  ░███ ░███    ███░   █░███░░░   ░███     	\e[0m   "
+        echo -e "\e[35m ███████████░░██████ ░░███████ ██████     █████   █████ ████ █████░░████████ █████ ░░███████   █████████░░██████  █████    	\e[0m   "
+        echo -e "\e[33m░░░░░░░░░░░  ░░░░░░   ░░░░░███░░░░░░     ░░░░░   ░░░░░ ░░░░ ░░░░░  ░░░░░░░░ ░░░░░   ░░░░░███  ░░░░░░░░░  ░░░░░░  ░░░░░     	\e[0m   "
+        echo -e "\e[33m                      ███ ░███                                                      ███ ░███                               	\e[0m   "
+        echo -e "\e[33m                      ░░██████                                                      ░░██████                               	\e[0m   "
+        echo -e "\e[33m                       ░░░░░░                                                        ░░░░░░                                 	\e[0m \n"
+}
+
+# Funcão para mostrar as opções
+Opções()
+{
+	echo -e "\n"
+
+        echo -e "Use: \e[36m./LogAnalyzer\e[0m" "\e[35mArquivo_de_Logs\e[0m" "\e[33mOpção\e[0m \n"
+
+        echo -e "Ex: \e[36m./LogAnalyzer\e[0m" "\e[35maccess.log\e[0m" "\e[33m1\e[0m \n"
+
+	echo -e "\n"
+
+
+        echo -e "\e[35m############################# Opções de Análise de Ataques ##############################\e[0m \n"
+
+
+        echo -e  "\e[36mDetectar possíveis ataques de XSS (Cross-Site Scripting):\e[0m" "\e[33m1\e[0m \n"
+
+        echo -e	 "\e[36mDetectar tentativas de SQL Injection:\e[0m" "\e[33m2\e[0m \n"
+
+        echo -e  "\e[36mDetectar varredura de diretórios (Directory Traversal:\e[0m" "\e[33m3\e[0m \n"
+
+        echo -e  "\e[36mDetectar possíveis ataques por scanners (User-Agent suspeito):\e[0m" "\e[33m4\e[0m \n"
+
+        echo -e  "\e[36mIdentificar tentativas de acesso a arquivos sensíveis (.env, .git, etc.):\e[0m" "\e[33m5\e[0m \n"
+
+        echo -e  "\e[36mDetectar possíveis ataques de força bruta a arquivos/pastas:\e[0m" "\e[33m6\e[0m \n"
+
+        echo -e  "\e[36mPrimeiro e ultimo acesso de um IP suspeito:\e[0m" "\e[33m7\e[0m \n"
+
+        echo -e  "\e[36mLocalizar user-agent utilizado por um IP suspeito:\e[0m" "\e[33m8\e[0m \n"
+
+        echo -e  "\e[36mListar os ips e verificar o numero de requisições:\e[0m" "\e[33m9\e[0m \n"
+
+        echo -e  "\e[36mLocalizar acesso a um determinado arquivo sensível:\e[0m" "\e[33m10\e[0m \n"
+
+}
+
+
+# Detectar possíveis ataques de XSS (Cross-Site Scripting)
+if [[ ${2} == "1" ]]
+then
+        banner_logs_analyzer
+	echo -e "\n"
+
+	echo -e "\e[36mPossíveis ataques de XSS (Cross-Site Scripting):\e[0m \n"
+
+	grep --color=always -iE "<script|%3Cscript" ${1}
+
+
+# Detectar tentativas de SQL Injection
+elif [[ ${2} == "2" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mPossíveis tentativas de SQL Injection:\e[0m \n"
+
+        grep --color=always -iE "(union.*select|select.*from|insert.*into|drop[[:space:]]+table|%27.*(or|and)|(%27|%22).*(=|--))" ${1}
+
+
+# Detectar varredura de diretórios (Directory Traversal)
+elif [[ ${2} == "3" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mPossíveis varreduras de diretórios (Directory Traversal:\e[0m \n"
+
+	grep --color=always -E "\.\./|\.\.%2f" ${1}
+
+
+# Detectar possíveis ataques por scanners (User-Agent suspeito)
+elif [[ ${2} == "4" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mPossíveis ataques por scanners (User-Agent suspeito):\e[0m \n"
+
+	grep --color=always -iE "nikto|nmap|sqlmap|acunetix|curl|masscan|python" ${1}
+
+
+# Identificar tentativas de acesso a arquivos sensíveis (.env, .git, etc.)
+elif [[ ${2} == "5" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mIdentificar tentativas de acesso a arquivos sensíveis (.env, .git, etc.):\e[0m \n"
+
+	grep --color=always -iE "\.env|\.git|\.htaccess|\.bak" ${1}
+
+
+# Detectar possíveis ataques de força bruta a arquivos/pastas
+elif [[ ${2} == "6" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mPossíveis ataques de força bruta a arquivos/pastas:\e[0m \n"
+
+	cat ${1} | grep " 404 " | cut -d " " -f 1 | sort | uniq -c | sort -nr | head
+
+
+# Primeiro e ultimo acesso de um IP suspeito
+elif [[ ${2} == "7" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mPrimeiro e ultimo acesso de um IP suspeito:\e[0m \n"
+
+	read -p "Digite o IP suspeito: " IP
+	echo -e "\n"
+
+
+	cat ${1} | grep --color=always "$IP" | head -n1
+ 	cat ${1} | grep --color=always "$IP" | tail -n1
+
+
+# Localizar user-agent utilizado por um IP suspeito
+elif [[ ${2} == "8" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mLocalizar user-agent utilizado por um IP suspeito:\e[0m \n"
+
+	read -p "Digite o IP suspeito: " IP
+	echo -e "\n"
+
+	cat ${1} | grep "$IP" | cut -d '"' -f 6 | sort | uniq
+
+
+# Listar os ips e verificar o numero de requisições
+elif [[ ${2} == "9" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mListar os ips e verificar o numero de requisições:\e[0m \n"
+
+	cat ${1} | cut -d " " -f 1 | sort | uniq -c | sort -nr
+
+
+# Localizar acesso a um determinado arquivo sensível
+elif [[ ${2} == "10" ]]
+then
+        banner_logs_analyzer
+        echo -e "\n"
+
+	echo -e  "\e[36mLocalizar acesso a um determinado arquivo sensível:\e[0m \n"
+
+	read -p "Digite um arquivo sensível: " arquivo
+	echo -e "\n"
+
+	cat ${1} | grep --color=always "$arquivo"
+
+
+# Mostrar como utilizar o script e as opções disponíveis
+else
+        banner_logs_analyzer
+        Opções
+    exit
+fi
